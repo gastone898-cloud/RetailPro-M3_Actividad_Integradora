@@ -16,8 +16,8 @@ USE Ventas_Tech_DB;
 --
 -- Conceptos: WHERE, DISTINCT, GROUP BY, ORDER BY
 --
--- En SQL Server se utiliza MONTH() en lugar de
--- EXTRACT(MONTH FROM fecha_venta), que corresponde a PostgreSQL.
+-- Se utiliza MONTH() en lugar de EXTRACT(MONTH FROM fecha
+-- _venta), que corresponde a PostgreSQL.
 -- ============================================================
 
 SELECT DISTINCT
@@ -38,8 +38,7 @@ ORDER BY MONTH(fecha_venta);
 --
 -- Conceptos: GROUP BY, ORDER BY y TOP 5.
 --
--- LIMIT 5 es utilizado en PostgreSQL.
--- En SQL Server se utiliza TOP 5 para obtener el mismo resultado.
+-- Se utiliza TOP 5 para obtener el mismo resultado.
 -- ============================================================
 
 SELECT TOP 5
