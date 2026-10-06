@@ -1,0 +1,103 @@
+-- ============================================================
+-- M5 - CONSULTAS CON JOINS
+-- Base de datos: Ventas_Tech_DB
+-- Motor: Microsoft SQL Server
+-- ============================================================
+
+USE Ventas_Tech_DB;
+
+-- ============================================================
+-- CONSULTA 1
+-- INNER JOIN entre ventas, clientes, productos y categorias
+-- ============================================================
+
+SELECT
+    v.fecha_venta,
+    c.id_cliente,
+    c.nombre AS nombre_cliente,
+    c.ciudad,
+    p.id_producto,
+    p.nombre_producto,
+    cat.nombre_categoria AS categoria,
+    v.cantidad,
+    v.precio_unitario,
+    (v.cantidad * v.precio_unitario) AS total_venta
+FROM ventas AS v
+INNER JOIN clientes AS c
+    ON v.id_cliente = c.id_cliente
+INNER JOIN productos AS p
+    ON v.id_producto = p.id_producto
+INNER JOIN categorias AS cat
+    ON p.id_categoria = cat.id_categoria
+ORDER BY v.fecha_venta;
+
+-- ============================================================
+-- CONSULTA 2
+-- Clientes que nunca realizaron una compra
+-- LEFT JOIN + IS NULL
+-- ============================================================
+
+SELECT
+    c.id_cliente,
+    c.nombre,
+    c.email,
+    c.ciudad,
+    c.fecha_registro
+FROM clientes AS c
+LEFT JOIN ventas AS v
+    ON c.id_cliente = v.id_cliente
+WHERE v.id_venta IS NULL;
+
+-- ============================================================
+-- CONSULTA 3
+-- Productos que nunca tuvieron ventas
+-- LEFT JOIN + IS NULL
+-- ============================================================
+
+SELECT
+    p.id_producto,
+    p.nombre_producto,
+    cat.nombre_categoria AS categoria,
+    p.precio
+FROM productos AS p
+INNER JOIN categorias AS cat
+    ON p.id_categoria = cat.id_categoria
+LEFT JOIN ventas AS v
+    ON p.id_producto = v.id_producto
+WHERE v.id_venta IS NULL;
+
+-- ============================================================
+-- CONSULTA 4
+-- Consolidado por canal
+--
+-- Como la tabla ventas no tiene una columna canal, se crea una
+-- clasificación para el ejercicio :
+-- Online     = ventas del 01/03/2024 al 05/03/2024
+-- Presencial = ventas posteriores al 05/03/2024
+--
+-- Se utiliza UNION ALL, como se solicita en la consigna.
+-- ============================================================
+
+SELECT
+    canal,
+    SUM(total) AS total_canal
+FROM
+(
+    SELECT
+        fecha_venta,
+        (cantidad * precio_unitario) AS total,
+        'Online' AS canal
+    FROM ventas
+    WHERE fecha_venta <= '2024-03-05'
+
+    UNION ALL
+
+    SELECT
+        fecha_venta,
+        (cantidad * precio_unitario) AS total,
+        'Presencial' AS canal
+    FROM ventas
+    WHERE fecha_venta > '2024-03-05'
+) AS consolidado
+GROUP BY canal
+ORDER BY canal;
